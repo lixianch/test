@@ -10,7 +10,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
  */
 @SpringBootApplication(scanBasePackages = "com.lixianch")
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-//@MapperScan(basePackages = "com.lixianch.dao.mapper")
+@MapperScan(basePackages = "com.lixianch.dao.mapper")
 public class MyApplication {
     public static void main(String[] args) {
         SpringApplication.run(MyApplication.class);

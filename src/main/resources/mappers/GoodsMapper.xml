@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lixianch.dao.mapper.GoodsMapper">
+  <resultMap id="BaseResultMap" type="com.lixianch.dao.entity.Goods">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="goods_code" jdbcType="VARCHAR" property="goodsCode" />
+    <result column="goods_name" jdbcType="VARCHAR" property="goodsName" />
+    <result column="created" jdbcType="DATE" property="created" />
+    <result column="modified" jdbcType="DATE" property="modified" />
+    <result column="yn" jdbcType="TINYINT" property="yn"/>
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, goods_code, goods_name, created, modified, yn
+  </sql>
+  <sql id="tableName">
+    goods
+  </sql>
+    <sql id="baseQuerySql">
+        <where>
+            <if test="@org.apache.commons.collections.CollectionUtils@isNotEmpty(ids)">
+                and id in
+                <foreach collection="ids" open="(" close=")" separator="," item="item">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="goodsCodes!=null and !goodsCodes.isEmpty()">
+                and goods_code in
+                <foreach collection="goodsCodes" open="(" close=")" separator="," item="item">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </sql>
+
+    <select id="findsByQuery" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from <include refid="tableName"/>
+        <include refid="baseQuerySql"/>
+        <if test="sort!=null and sort.needOrder">
+            ${sort.orderBy}
+        </if>
+        limit #{pageStart},#{pageSize}
+    </select>
+    <select id="countsByQuery" resultType="int">
+        select count(0) from <include refid="tableName"/>
+        <include refid="baseQuerySql"/>
+    </select>
+    <select id="getByCode" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List" />
+        from <include refid="tableName"/> where goods_code=#{goodsCode}
+    </select>
+
+    <insert id="save" >
+        insert into <include refid="tableName"/>
+        (goods_code, goods_name, created, modified) values
+        (#{goodsCode}, #{goodsName}, now(), now(), #{yn})
+    </insert>
+
+    <update id="updateById" >
+        update <include refid="tableName"/> set update_id=#{updateId},modified=#{modified}
+        <if test="goodsName!=null">
+            ,goods_name = #{goodsName}
+        </if>
+        <if test="yn!=null">
+            ,yn = #{yn}
+        </if>
+        where id = #{id}
+    </update>
+
+
+</mapper>
